@@ -2,54 +2,28 @@
 
 ## Descripción
 
-ZyphraOS es un sistema operativo x86 de 32 bits desarrollado desde cero, sin usar Linux, libc o cualquier otra dependencia. Es un proyecto educativo diseñado para enseñar cómo funcionan los sistemas operativos a nivel bajo nivel.
+ZyphraOS es un sistema operativo x86 de 32 bits desarrollado desde cero, sin dependencias externas. Proyecto educativo para enseñar fundamentos de sistemas operativos a nivel bajo.
 
 ## Características
 
-- ✅ Boot desde GRUB con soporte Multiboot
-- ✅ Modo protegido 32-bit
-- ✅ Gestión de memoria física (PMM)
-- ✅ Paginación
-- ✅ Heap del kernel
-- ✅ Scheduler de procesos
-- ✅ Driver de video VBE
-- ✅ Driver de teclado PS/2
-- ✅ Driver de disco ATA
-- ✅ Sistema de archivos FAT16
-- ✅ Shell interactivo
-- ✅ Juego Snake
-- ✅ Monitor del sistema
+- Boot desde GRUB con soporte Multiboot
+- Modo protegido 32-bit
+- Gestión de memoria física (PMM)
+- Paginación
+- Heap del kernel
+- Scheduler de procesos
+- Driver de video VBE
+- Driver de teclado PS/2
+- Driver de disco ATA
+- Sistema de archivos FAT16
+- Shell interactivo
+- Juego Snake
+- Monitor del sistema
 
-## Licencia
+## Capturas de pantalla
 
-Este proyecto está licenciado bajo la **ZyphraOS License v1.0**.
-
-### Resumen de la Licencia
-
-Puedes:
-- ✅ **Usar** el código libremente para cualquier propósito
-- ✅ **Modificar** el código para tus proyectos
-- ✅ **Redistribuir** el código a otros
-- ✅ **Aprender** de él y contribuir al proyecto
-
-Pero ten en cuenta:
-- ⚠️ El código es original de ZyphraOS
-- ⚠️ No me hago responsable si dañas tu hardware
-- ⚠️ Es software experimental, úsalo bajo tu propio riesgo
-
-**Ver archivo [LICENSE](LICENSE) para los términos completos.**
-
-## Advertencia Importante
-
-**⚠️ ESTE SOFTWARE ES EXPERIMENTAL Y SE PROPORCIONA "TAL CUAL".**
-
-El uso en hardware real conlleva riesgos inherentes, incluyendo pero no limitado a:
-- Daños potenciales al hardware
-- Pérdida de datos en discos duros
-- Inestabilidad del sistema
-- Comportamiento impredecible
-
-**EL USUARIO ES EL ÚNICO RESPONSABLE DE CUALQUIER DAÑO QUE PUEDA OCURRIR.**
+### Shell interactivo
+![Shell de ZyphraOS](screenshots/ZypharaTest1.png)
 
 ## Requisitos
 
@@ -83,13 +57,13 @@ make iso
 ### 3. Probar en QEMU
 
 ```bash
-# Modo VGA texto
+# Modo VGA texto (64MB RAM)
 make run
 
-# Modo VBE 800x600
+# Modo VBE 800x600 (64MB RAM)
 make run-vbe
 
-# Modo VBE con más RAM
+# Modo VBE con más RAM (256MB)
 make run-big
 ```
 
@@ -98,7 +72,6 @@ make run-big
 1. Grabar `zyphraos.iso` en USB con Rufus
 2. Boot desde USB
 3. Seleccionar modo VBE en menú GRUB
-4. ¡Disfrutar!
 
 ## Estructura del Proyecto
 
@@ -126,6 +99,7 @@ zyphraos/
 │       ├── grub/
 │       │   └── grub.cfg    # Configuración de GRUB
 │       └── zyphraos.elf    # Kernel compilado
+├── screenshots/        # Capturas de pantalla del sistema
 ├── Makefile            # Script de compilación
 ├── LICENSE             # Licencia del proyecto
 └── README.md           # Este archivo
@@ -133,26 +107,43 @@ zyphraos/
 
 ## Documentación
 
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía completa para contribuir al proyecto
-- **[CREDITS.md](CREDITS.md)** - Reconocimiento a colaboradores y roles especiales
-- **[ANALISIS_VIDEO.md](ANALISIS_VIDEO.md)** - Análisis detallado del driver de video
-- **[CORRECCIONES_VIDEO.md](CORRECCIONES_VIDEO.md)** - Resumen de correcciones realizadas
-- **[INSTRUCCIONES_PRUEBA.md](INSTRUCCIONES_PRUEBA.md)** - Guía para probar el sistema
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía para contribuir al proyecto
+- **[CREDITS.md](CREDITS.md)** - Reconocimiento a colaboradores
+
+## Licencia
+
+Este proyecto está licenciado bajo la **ZyphraOS License v1.0**.
+
+### Resumen de la Licencia
+
+Puedes:
+- Usar el código libremente para cualquier propósito
+- Modificar el código para tus proyectos
+- Redistribuir el código a otros
+- Aprender de él y contribuir al proyecto
+
+Restricciones:
+- El código es original de ZyphraOS
+- No se hace responsable de daños al hardware
+- Es software experimental, úsalo bajo tu propio riesgo
+
+**Ver archivo [LICENSE](LICENSE) para los términos completos.**
+
+## Advertencia
+
+**ESTE SOFTWARE ES EXPERIMENTAL Y SE PROPORCIONA "TAL CUAL".**
+
+El uso en hardware real conlleva riesgos:
+- Daños potenciales al hardware
+- Pérdida de datos en discos duros
+- Inestabilidad del sistema
+- Comportamiento impredecible
+
+**EL USUARIO ES EL ÚNICO RESPONSABLE DE CUALQUIER DAÑO QUE PUEDA OCURRIR.**
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas. Si quieres contribuir:
-
-### 🚀 Únete a la Comunidad
-
-**[Únete a nuestro servidor de Discord](https://discord.gg/KVFBpEN3Gs)** - ¡Aquí puedes:
-- Hacer preguntas sobre el código
-- Proponer nuevas funcionalidades
-- Colaborar con otros desarrolladores
-- Compartir tus experimentos
-- Obtener ayuda con problemas técnicos
-
-### 📝 Proceso de Contribución
+Las contribuciones son bienvenidas. Para contribuir:
 
 1. Haz un fork del proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
@@ -168,54 +159,11 @@ Las contribuciones son bienvenidas. Si quieres contribuir:
 - Prueba tus cambios antes de enviar
 - Respeta la licencia del proyecto
 
-## Contacto y Colaboración
+## Contacto
 
-- **Canal de YouTube:** [Tu Canal]
-- **Repositorio:** [Tu Repositorio]
-- **Email:** [Tu Email]
-- **Discord:** [Únete a nuestro servidor](https://discord.gg/KVFBpEN3Gs) - ¡Colabora con el proyecto, haz preguntas y comparte tus ideas!
-
-## Agradecimientos
-
-Gracias a toda la comunidad de desarrollo de sistemas operativos por su inspiración y apoyo.
-
----
-
-**Recuerda:** Este es un proyecto educativo. Úsalo para aprender y experimentar. ¡Diviértete creando tu propio sistema operativo!
-
----
-
-## Ver Créditos en el Sistema Operativo
-
-ZyphraOS reconoce a sus colaboradores dentro del propio sistema:
-
-### Comando `credits`
-En el shell de ZyphraOS, escribe `credits` para ver todos los colaboradores:
-
-```
-zyphraos> credits
-
-╔══════════════════════════════════════════════════════════════╗
-║                    ZYPHRAOS CREDITS                         ║
-╠══════════════════════════════════════════════════════════════╣
-║  Project Creator:                                          ║
-║    - ZyphraOS Team                                         ║
-║                                                            ║
-║  Core Contributors:                                        ║
-║    - (Tu nombre podría estar aquí!)                        ║
-║                                                            ║
-║  Contributors:                                             ║
-║    - (Tu nombre podría estar aquí!)                        ║
-║                                                            ║
-║  Únete: https://discord.gg/KVFBpEN3Gs                      ║
-╚══════════════════════════════════════════════════════════════╝
-```
-
-### Comando `sysmon`
-El monitor del sistema muestra información del sistema incluyendo el número de colaboradores.
-
-### Pantalla de Boot
-Los colaboradores principales se muestran durante el arranque del sistema.
+- **Canal de YouTube:** [BrunoEnBits](https://www.youtube.com/@BrunoEnBits)
+- **Email:** juanlopezdfu@gmail.com
+- **Discord:** [Únete a nuestro servidor](https://discord.gg/KVFBpEN3Gs)
 
 ## Preguntas Frecuentes
 
@@ -234,17 +182,14 @@ No, la licencia te otorga permiso automáticamente.
 ### ¿Qué pasa si daño mi hardware?
 Ese es tu responsabilidad. La licencia es clara sobre eso.
 
-### ¿Puedo usarlo comercialmente?
-Sí, siempre que respetes los términos de atribución.
-
 ### ¿Cómo puedo contribuir?
-Lee [CONTRIBUTING.md](CONTRIBUTING.md) para la guía completa. ¡Las contribuciones son bienvenidas!
+Lee [CONTRIBUTING.md](CONTRIBUTING.md) para la guía completa.
 
 ### ¿Cómo obtengo reconocimiento por mi contribución?
-Lee [CREDITS.md](CREDITS.md) para ver cómo los colaboradores obtienen reconocimiento en el sistema operativo.
+Lee [CREDITS.md](CREDITS.md) para ver cómo los colaboradores obtienen reconocimiento.
 
 ---
 
-**Última actualización:** 26 de febrero de 2026
+**Última actualización:** 28 de marzo de 2026
 **Versión:** 1.0
 **Licencia:** ZyphraOS License v1.0
