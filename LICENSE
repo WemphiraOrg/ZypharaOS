@@ -1,0 +1,238 @@
+# ZyphraOS License v1.0
+
+## Copyright (c) 2026 ZyphraOS Project
+
+## Resumen en Español (Informal)
+
+Esta es una licencia de código abierto educativo. Puedes:
+- ✅ Usar el código libremente
+- ✅ Modificarlo para tus proyectos
+- ✅ Redistribuirlo a otros
+- ✅ Aprender de él y contribuir
+
+Pero ten en cuenta:
+- ⚠️ El código es original de ZyphraOS
+- ⚠️ No me hago responsable si dañas tu hardware
+- ⚠️ Es software experimental, úsalo bajo tu propio riesgo
+
+---
+
+## Términos y Condiciones Completos
+
+### 1. Definiciones
+
+- **"Software"** se refiere al código fuente y binarios del sistema operativo ZyphraOS
+- **"Licenciante"** se refiere al creador original del software
+- **"Usuario"** se refiere a cualquier persona que use, modifique o redistribuya el software
+- **"Propósito Educativo"** incluye aprendizaje, investigación, enseñanza y experimentación
+
+### 2. Concesión de Licencia
+
+Por la presente, se otorga una licencia gratuita, no exclusiva, perpetua y mundial para:
+
+#### 2.1 Uso
+- Usar el software para cualquier propósito legítimo
+- Ejecutar el software en cualquier hardware compatible
+- Usar el software con fines educativos, comerciales o personales
+
+#### 2.2 Modificación
+- Modificar el código fuente para adaptarlo a tus necesidades
+- Crear obras derivadas basadas en el software
+- Mejorar el software y agregar nuevas funcionalidades
+
+#### 2.3 Redistribución
+- Copiar y distribuir el software en su forma original
+- Distribuir versiones modificadas del software
+- Incluir el software en otros proyectos
+
+### 3. Condiciones de Redistribución
+
+Al redistribuir el software, debes:
+
+#### 3.1 Atribución
+- Mantener intacto el aviso de copyright original
+- Incluir una copia de esta licencia
+- Dar crédito al proyecto ZyphraOS como origen del código
+
+#### 3.2 Documentación de Cambios
+- Si modificas el software, documentar los cambios realizados
+- Indicar claramente qué partes fueron modificadas
+- No atribuir tus cambios al proyecto original
+
+#### 3.3 Disponibilidad del Código
+- Si distribuyes binarios, también proporcionar el código fuente
+- Hacer el código fuente disponible de forma gratuita
+- Mantener el código accesible para futuros usuarios
+
+### 4. Restricciones
+
+#### 4.1 No Puedes:
+- Usar el nombre "ZyphraOS" para promocionar productos derivados sin permiso
+- Afirmar que el proyecto original respalda tu versión modificada
+- Remover o alterar los avisos de copyright y licencia
+- Usar el software para actividades ilegales o maliciosas
+
+#### 4.2 Debes:
+- Respetar los derechos de propiedad intelectual de terceros
+- Cumplir con todas las leyes locales e internacionales aplicables
+- No usar el software para causar daño a otros
+
+### 5. Descargo de Responsabilidad
+
+#### 5.1 Sin Garantía
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A:
+
+- Garantías de comerciabilidad
+- Garantías de idoneidad para un propósito particular
+- Garantías de no infracción
+- Garantías de funcionamiento ininterrumpido o libre de errores
+
+#### 5.2 Riesgo del Usuario
+EL USUARIO ASUME TODO EL RIESGO DERIVADO DEL USO DEL SOFTWARE. EL LICENCIANTE NO SERÁ RESPONSABLE POR NINGÚN DAÑO DIRECTO, INDIRECTO, INCIDENTAL, ESPECIAL, EJEMPLAR O CONSECUENTE, INCLUYENDO PERO NO LIMITADO A:
+
+- Daños a hardware o equipos
+- Pérdida de datos o información
+- Interrupción del negocio
+- Lesiones personales
+- Cualquier otro daño o pérdida
+
+#### 5.3 Hardware Real
+**ADVERTENCIA ESPECIAL:** Este software es experimental y está diseñado principalmente con fines educativos. El uso en hardware real conlleva riesgos inherentes, incluyendo pero no limitado a:
+
+- Daños potenciales al hardware
+- Pérdida de datos en discos duros
+- Inestabilidad del sistema
+- Comportamiento impredecible
+
+**EL USUARIO ES EL ÚNICO RESPONSABLE DE CUALQUIER DAÑO QUE PUEDA OCURRIR AL USAR ESTE SOFTWARE EN HARDWARE REAL.**
+
+### 6. Propiedad Intelectual
+
+#### 6.1 Derechos del Licenciante
+- El licenciante retiene todos los derechos de propiedad intelectual sobre el software original
+- Esta licencia no transiere la propiedad del software
+- El licenciante se reserva todos los derechos no expresamente otorgados
+
+#### 6.2 Derechos del Usuario
+- Los usuarios poseen los derechos sobre sus propias modificaciones
+- Las obras derivadas pueden tener sus propios derechos de autor
+- Los usuarios pueden licenciar sus modificaciones bajo diferentes términos
+
+### 7. Contribuciones
+
+#### 7.1 Contribuciones al Proyecto
+- Las contribuciones al proyecto original son bienvenidas
+- Al contribuir, otorgas al licenciante una licencia perpetua para usar tu contribución
+- Las contribuciones deben respetar esta licencia
+
+#### 7.2 Comunidad
+- Se fomenta la colaboración y el aprendizaje conjunto
+- Se valora el respeto mutuo entre usuarios
+- Se promueve la mejora continua del software
+
+### 8. Terminación
+
+#### 8.1 Terminación Automática
+Esta licencia terminará automáticamente si:
+- El usuario viola cualquiera de sus términos
+- El usuario intenta eludir las restricciones de la licencia
+- El usuario usa el software para actividades ilegales
+
+#### 8.2 Efectos de la Terminación
+Al terminar la licencia:
+- Debes cesar todo uso del software
+- Debes destruir todas las copias en tu posesión
+- Las secciones de responsabilidad y garantía permanecen vigentes
+
+### 9. Ley Aplicable
+
+Esta licencia se rige por las leyes internacionales de derechos de autor y propiedad intelectual. Cualquier disputa se resolverá mediante negociación amistosa o, en su defecto, mediante arbitraje.
+
+### 10. Disposiciones Generales
+
+#### 10.1 Separabilidad
+Si alguna disposición de esta licencia es inválida, las disposiciones restantes permanecen en vigor.
+
+#### 10.2 Acuerdo Completo
+Esta licencia constituye el acuerdo completo entre las partes respecto al software.
+
+#### 10.3 Modificaciones
+Solo el licenciante puede modificar los términos de esta licencia. Las versiones futuras pueden tener términos diferentes.
+
+---
+
+## Cómo Usar Esta Licencia
+
+### En tu Repositorio:
+1. Guarda este archivo como `LICENSE` en la raíz del proyecto
+2. Agrega al inicio de cada archivo de código:
+   ```
+   /*
+    * ZyphraOS - Sistema Operativo Educativo
+    * Copyright (c) 2026 ZyphraOS Project
+    * Licenciado bajo ZyphraOS License v1.0
+    * Ver LICENSE para más detalles
+    */
+   ```
+
+### En tu Video de YouTube:
+```
+ZyphraOS - Sistema Operativo Educativo de Código Abierto
+
+Este proyecto está licenciado bajo la ZyphraOS License v1.0.
+Puedes usar, modificar y redistribuir el código libremente para fines educativos.
+
+⚠️ ADVERTENCIA: Este software es experimental. Úsalo bajo tu propio riesgo.
+El autor no se hace responsable de ningún daño a hardware o datos.
+```
+
+### En el README.md:
+```markdown
+## Licencia
+
+Este proyecto está licenciado bajo la **ZyphraOS License v1.0**.
+
+Puedes:
+- ✅ Usar el código libremente
+- ✅ Modificarlo para tus proyectos
+- ✅ Redistribuirlo a otros
+- ✅ Aprender de él y contribuir
+
+⚠️ **Advertencia:** Este software es experimental. Úsalo bajo tu propio riesgo.
+
+Ver archivo [LICENSE](LICENSE) para los términos completos.
+```
+
+---
+
+## Preguntas Frecuentes
+
+### ¿Puedo usar este software comercialmente?
+Sí, siempre que respetes los términos de atribución y distribuyas el código fuente.
+
+### ¿Necesito pedir permiso para usarlo?
+No, esta licencia te otorga permiso automáticamente al usar el software.
+
+### ¿Puedo cambiar la licencia de mis modificaciones?
+Sí, puedes licenciar tus modificaciones bajo términos diferentes, pero debes mantener la licencia original para el código que no hayas modificado.
+
+### ¿Qué pasa si encuentro un bug?
+Puedes reportarlo al proyecto original o corregirlo tú mismo. Las correcciones son bienvenidas.
+
+### ¿Puedo usar el nombre "ZyphraOS" para mi versión?
+Solo si no causas confusión con el proyecto original. Es mejor usar un nombre diferente para tu versión modificada.
+
+---
+
+## Contacto
+
+Para preguntas sobre esta licencia o el proyecto:
+- Canal de YouTube: [tu canal]
+- Repositorio: [tu repositorio]
+- Email: [tu email]
+
+---
+
+**Última actualización:** 26 de febrero de 2026
+**Versión de la licencia:** 1.0
+**Proyecto:** ZyphraOS - Sistema Operativo Educativo
