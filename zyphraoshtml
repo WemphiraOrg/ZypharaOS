@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ZyphraOS — 32-bit Operating System</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #040810;
+    --bg2:      #080f1c;
+    --cyan:     #00ffe7;
+    --cyan2:    #00bfad;
+    --green:    #39ff6a;
+    --red:      #ff3c5a;
+    --amber:    #ffd24a;
+    --text:     #c8d8e8;
+    --dim:      #5a7088;
+    --border:   rgba(0,255,231,.18);
+    --glow:     0 0 18px rgba(0,255,231,.35), 0 0 60px rgba(0,255,231,.1);
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-ui:   'Rajdhani', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINES OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,.07) 3px,
+      rgba(0,0,0,.07) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NOISE GRAIN ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: .5;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--cyan2); border-radius: 2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .9rem 2.5rem;
+    background: rgba(4,8,16,.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    color: var(--cyan);
+    text-shadow: var(--glow);
+    letter-spacing: .08em;
+  }
+  .nav-logo span { color: var(--green); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--dim);
+    text-decoration: none;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--cyan); text-shadow: var(--glow); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Radial glow behind hero */
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 20%; left: 50%; transform: translate(-50%,-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(ellipse, rgba(0,255,231,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Grid dots bg */
+  #hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(0,255,231,.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    animation: gridScroll 30s linear infinite;
+  }
+  @keyframes gridScroll { to { background-position: 36px 36px; } }
+
+  .hero-inner {
+    position: relative; z-index: 2;
+    max-width: 860px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .2em;
+    color: var(--cyan);
+    border: 1px solid var(--border);
+    padding: .35rem 1rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    animation: fadeDown .6s ease both;
+  }
+
+  .hero-title {
+    font-family: var(--font-mono);
+    font-size: clamp(3rem, 10vw, 6.5rem);
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(0,255,231,.4), 0 0 2px rgba(0,255,231,.8);
+    animation: fadeDown .7s ease .1s both;
+    letter-spacing: -.02em;
+  }
+
+  .hero-title .accent { color: var(--cyan); }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: .95rem;
+    color: var(--dim);
+    margin: 1.4rem 0 2.5rem;
+    animation: fadeDown .7s ease .2s both;
+    letter-spacing: .05em;
+  }
+
+  .hero-tags {
+    display: flex; flex-wrap: wrap; gap: .6rem;
+    justify-content: center;
+    margin-bottom: 2.8rem;
+    animation: fadeDown .7s ease .3s both;
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    padding: .28rem .8rem;
+    border: 1px solid var(--border);
+    color: var(--cyan2);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .tag.green { border-color: rgba(57,255,106,.3); color: var(--green); }
+  .tag.amber { border-color: rgba(255,210,74,.3); color: var(--amber); }
+
+  .hero-btns {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeDown .7s ease .4s both;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--cyan);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .85rem 2.2rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: box-shadow .2s, transform .15s;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,255,231,.6);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: transparent;
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: .82rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .83rem 2.2rem;
+    border: 1px solid var(--cyan);
+    text-decoration: none;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background .2s, color .2s;
+  }
+  .btn-ghost:hover { background: rgba(0,255,231,.08); }
+
+  /* Terminal boot animation */
+  .terminal-box {
+    margin: 3.5rem auto 0;
+    max-width: 580px;
+    background: rgba(8,15,28,.9);
+    border: 1px solid var(--border);
+    text-align: left;
+    animation: fadeDown .7s ease .5s both;
+    position: relative;
+    overflow: hidden;
+  }
+  .terminal-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scanH 2.5s ease-in-out infinite;
+  }
+  @keyframes scanH {
+    0%,100% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 1; transform: translateX(100%); }
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .55rem .9rem;
+    background: rgba(0,255,231,.04);
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .term-dot.r { background: var(--red); }
+  .term-dot.a { background: var(--amber); }
+  .term-dot.g { background: var(--green); }
+  .term-title { font-family: var(--font-mono); font-size: .68rem; color: var(--dim); margin-left: .3rem; letter-spacing: .1em; }
+  .term-body { padding: 1.1rem 1.3rem; }
+  .term-line {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    color: var(--green);
+    display: flex; align-items: flex-start; gap: .4rem;
+    margin-bottom: .45rem;
+    opacity: 0;
+    animation: termLine .15s ease forwards;
+  }
+  .term-line .p { color: var(--cyan); flex-shrink: 0; }
+  .term-line .t { color: var(--text); }
+  .term-line .ok { color: var(--green); }
+  .term-line .warn { color: var(--amber); }
+  .term-cursor {
+    display: inline-block; width: 8px; height: .9em;
+    background: var(--cyan);
+    margin-left: 2px;
+    animation: blink .7s step-end infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* staggered delays for terminal lines */
+  .term-line:nth-child(1)  { animation-delay: .8s }
+  .term-line:nth-child(2)  { animation-delay: 1.1s }
+  .term-line:nth-child(3)  { animation-delay: 1.4s }
+  .term-line:nth-child(4)  { animation-delay: 1.7s }
+  .term-line:nth-child(5)  { animation-delay: 2.0s }
+  .term-line:nth-child(6)  { animation-delay: 2.3s }
+  .term-line:nth-child(7)  { animation-delay: 2.6s }
+  @keyframes termLine { to { opacity: 1; } }
+
+  /* ── SECTIONS COMMON ── */
+  section { padding: 6rem 2rem; position: relative; }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .25em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: .7rem;
+  }
+  .section-label::after {
+    content: '';
+    display: block; height: 1px; flex: 1;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+  .section-title {
+    font-family: var(--font-ui);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    letter-spacing: -.01em;
+  }
+  .section-desc {
+    color: var(--dim);
+    font-size: 1rem;
+    max-width: 540px;
+    line-height: 1.7;
+    font-family: var(--font-mono);
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── FEATURES ── */
+  #features { background: var(--bg2); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+  .feat-card {
+    background: rgba(4,8,16,.7);
+    border: 1px solid var(--border);
+    padding: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s, transform .25s;
+    cursor: default;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--cyan);
+    opacity: 0;
+    transition: opacity .25s;
+  }
+  .feat-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
+  .feat-card:hover::before { opacity: 1; }
+  .feat-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .feat-name {
+    font-family: var(--font-ui);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: .5rem;
+  }
+  .feat-desc {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    color: var(--dim);
+    line-height: 1.7;
+  }
+  .feat-tag {
+    display: inline-block;
+    margin-top: .8rem;
+    font-family: var(--font-mono);
+    font-size: .62rem;
+    color: var(--cyan2);
+    border: 1px solid rgba(0,255,231,.2);
+    padding: .18rem .5rem;
+    letter-spacing: .1em;
+  }
+
+  /* ── HOW TO INSTALL ── */
+  #install { background: var(--bg); }
+  .install-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+  .steps { display: flex; flex-direction: column; gap: 1.5rem; }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 1rem;
+    align-items: start;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity .5s, transform .5s;
+  }
+  .step.visible { opacity: 1; transform: none; }
+  .step-num {
+    width: 48px; height: 48px;
+    border: 2px solid var(--cyan);
+    display: grid; place-items: center;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--cyan);
+    flex-shrink: 0;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    background: rgba(0,255,231,.05);
+  }
+  .step-content {}
+  .step-title {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: .3rem;
+  }
+  .step-text {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    color: var(--dim);
+    line-height: 1.7;
+  }
+  .step-text code {
+    background: rgba(0,255,231,.07);
+    color: var(--cyan);
+    padding: .1rem .35rem;
+    font-family: var(--font-mono);
+    font-size: .73rem;
+    border: 1px solid rgba(0,255,231,.15);
+  }
+  .rufus-card {
+    background: rgba(8,15,28,.95);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: sticky; top: 7rem;
+  }
+  .rufus-header {
+    display: flex; align-items: center; gap: .8rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .rufus-icon { font-size: 2rem; }
+  .rufus-name {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #fff;
+  }
+  .rufus-ver { font-family: var(--font-mono); font-size: .68rem; color: var(--dim); }
+  .rufus-settings { display: flex; flex-direction: column; gap: .9rem; }
+  .rufus-field {}
+  .rufus-label { font-family: var(--font-mono); font-size: .65rem; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .25rem; }
+  .rufus-value {
+    background: rgba(0,255,231,.04);
+    border: 1px solid var(--border);
+    padding: .5rem .75rem;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--cyan);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .rufus-value .check { color: var(--green); font-size: .8rem; }
+  .note-box {
+    margin-top: 1.5rem;
+    background: rgba(255,210,74,.05);
+    border-left: 3px solid var(--amber);
+    padding: .8rem 1rem;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--amber);
+    line-height: 1.6;
+  }
+
+  /* ── SPECS ── */
+  #specs { background: var(--bg2); }
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .spec-item {
+    background: rgba(8,15,28,.8);
+    padding: 1.5rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+  }
+  .spec-item:hover { background: rgba(0,255,231,.04); }
+  .spec-key { font-family: var(--font-mono); font-size: .65rem; color: var(--dim); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; }
+  .spec-val { font-family: var(--font-mono); font-size: 1.05rem; color: var(--cyan); font-weight: 700; }
+  .spec-val.green { color: var(--green); }
+
+  /* ── DOWNLOAD CTA ── */
+  #download {
+    background: var(--bg);
+    padding: 7rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #download::before {
+    content: '';
+    position: absolute; bottom: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,255,231,.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .dl-version {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    color: var(--dim);
+    margin-top: 1.5rem;
+    letter-spacing: .1em;
+  }
+  .dl-size {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--green);
+    border: 1px solid rgba(57,255,106,.25);
+    padding: .3rem .8rem;
+    margin-top: .8rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--dim);
+    background: var(--bg2);
+  }
+  footer span { color: var(--cyan); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top: 3rem; display: flex; flex-direction: column; gap: .6rem; }
+  .faq-item {
+    border: 1px solid var(--border);
+    background: rgba(4,8,16,.7);
+    overflow: hidden;
+  }
+  .faq-q {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    padding: 1.1rem 1.5rem;
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font-ui); font-size: 1rem; font-weight: 600;
+    color: #fff; text-align: left; gap: 1rem;
+    transition: background .2s;
+  }
+  .faq-q:hover { background: rgba(0,255,231,.04); }
+  .faq-q.open { color: var(--cyan); }
+  .faq-arrow { color: var(--dim); font-size: .7rem; flex-shrink: 0; transition: transform .25s; }
+  .faq-q.open .faq-arrow { transform: rotate(180deg); color: var(--cyan); }
+  .faq-a {
+    font-family: var(--font-mono); font-size: .78rem; color: var(--dim);
+    line-height: 1.8; padding: 0 1.5rem;
+    max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .25s ease;
+  }
+  .faq-a code {
+    background: rgba(0,255,231,.07); color: var(--cyan);
+    padding: .1rem .35rem; border: 1px solid rgba(0,255,231,.15);
+    font-family: var(--font-mono); font-size: .73rem;
+  }
+  .faq-a.open { max-height: 300px; padding: .2rem 1.5rem 1.2rem; }
+
+  /* ── SUPPORT ── */
+  .support-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .support-card {
+    border: 1px solid var(--border);
+    background: rgba(8,15,28,.9);
+    padding: 2rem;
+    display: flex; flex-direction: column; gap: 1.2rem;
+    position: relative; overflow: hidden;
+    transition: border-color .25s, transform .2s;
+  }
+  .support-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0; transition: opacity .25s;
+  }
+  .discord-card::after { background: linear-gradient(90deg, #5865F2, #7289DA); }
+  .gmail-card::after   { background: linear-gradient(90deg, #EA4335, #FBBC05); }
+  .support-card:hover { transform: translateY(-4px); }
+  .discord-card:hover { border-color: rgba(88,101,242,.6); }
+  .gmail-card:hover   { border-color: rgba(234,67,53,.5); }
+  .support-card:hover::after { opacity: 1; }
+
+  .support-card-top { display: flex; align-items: center; gap: 1rem; }
+  .support-icon {
+    width: 56px; height: 56px;
+    display: grid; place-items: center;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .discord-icon { background: rgba(88,101,242,.12); color: #7289DA; }
+  .gmail-icon   { background: rgba(234,67,53,.1);  color: #EA4335; }
+  .support-platform {
+    font-family: var(--font-ui); font-weight: 700; font-size: 1.2rem; color: #fff;
+  }
+  .support-handle { font-family: var(--font-mono); font-size: .7rem; color: var(--dim); margin-top: .15rem; }
+
+  .support-desc {
+    font-family: var(--font-mono); font-size: .76rem; color: var(--dim); line-height: 1.75;
+  }
+  .support-desc strong { color: var(--text); }
+
+  .support-perks { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .perk {
+    font-family: var(--font-mono); font-size: .65rem;
+    padding: .25rem .65rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-support {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono); font-size: .78rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: .75rem 1.5rem; text-decoration: none; border: none; cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: box-shadow .2s, transform .15s; margin-top: auto;
+  }
+  .discord-btn { background: #5865F2; color: #fff; }
+  .discord-btn:hover { box-shadow: 0 0 25px rgba(88,101,242,.55); transform: translateY(-2px); }
+  .gmail-btn { background: #EA4335; color: #fff; }
+  .gmail-btn:hover { box-shadow: 0 0 25px rgba(234,67,53,.5); transform: translateY(-2px); }
+
+  /* ── TIPS BOX ── */
+  .tips-box {
+    margin-top: 2.5rem;
+    background: rgba(8,15,28,.85);
+    border: 1px solid rgba(255,210,74,.2);
+    overflow: hidden;
+  }
+  .tips-header {
+    display: flex; align-items: center; gap: .8rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255,210,74,.05);
+    border-bottom: 1px solid rgba(255,210,74,.15);
+    font-family: var(--font-mono); font-size: .78rem;
+    color: var(--amber); letter-spacing: .08em;
+  }
+  .tips-icon { font-size: 1.1rem; }
+  .tips-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .tip-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.2rem 1.5rem;
+    border-right: 1px solid rgba(255,210,74,.1);
+    border-bottom: 1px solid rgba(255,210,74,.1);
+  }
+  .tip-item:nth-child(2n) { border-right: none; }
+  .tip-item:nth-child(3), .tip-item:nth-child(4) { border-bottom: none; }
+  .tip-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    display: grid; place-items: center;
+    background: rgba(255,210,74,.1);
+    border: 1px solid rgba(255,210,74,.3);
+    font-family: var(--font-mono); font-size: .75rem; color: var(--amber);
+  }
+  .tip-title { font-family: var(--font-ui); font-weight: 600; font-size: .92rem; color: #fff; margin-bottom: .3rem; }
+  .tip-text { font-family: var(--font-mono); font-size: .72rem; color: var(--dim); line-height: 1.65; }
+  .tip-text code {
+    background: rgba(0,255,231,.07); color: var(--cyan);
+    padding: .05rem .3rem; border: 1px solid rgba(0,255,231,.15); font-size: .7rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: .8rem 1.2rem; }
+    .nav-links { gap: 1.2rem; }
+    .install-layout { grid-template-columns: 1fr; }
+    .rufus-card { position: static; }
+    .hero-btns { flex-direction: column; align-items: center; }
+    .support-grid { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .tip-item { border-right: none !important; }
+    .tip-item:nth-child(3) { border-bottom: 1px solid rgba(255,210,74,.1) !important; }
+  }
+  @media (max-width: 500px) {
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ZYPHRA<span>OS</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#install">Instalar</a></li>
+    <li><a href="#specs">Specs</a></li>
+    <li><a href="#download">Descargar</a></li>
+    <li><a href="#support">Soporte</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">// Sistema operativo de 32 bits — by Bruno</div>
+    <h1 class="hero-title">ZYPHRA<span class="accent">OS</span></h1>
+    <p class="hero-sub">[ Arquitectura x86 · C + ASM · Hardware Real · Open Source ]</p>
+    <div class="hero-tags">
+      <span class="tag">32-bit i386</span>
+      <span class="tag">GRUB Multiboot2</span>
+      <span class="tag green">VGA / Framebuffer</span>
+      <span class="tag">GDT / IDT</span>
+      <span class="tag green">PIC Remapping</span>
+      <span class="tag amber">PS/2 Keyboard</span>
+      <span class="tag">TCP/IP Stack</span>
+      <span class="tag amber">e1000 / RTL8139</span>
+    </div>
+    <div class="hero-btns">
+      <a href="#download" class="btn-primary">
+        ↓ &nbsp;Descargar ISO
+      </a>
+      <a href="#install" class="btn-ghost">
+        ⚙ &nbsp;Cómo instalar
+      </a>
+    </div>
+
+    <!-- TERMINAL BOOT -->
+    <div class="terminal-box">
+      <div class="term-bar">
+        <span class="term-dot r"></span>
+        <span class="term-dot a"></span>
+        <span class="term-dot g"></span>
+        <span class="term-title">ZyphraOS — boot sequence</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> Multiboot2 header detected</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> GDT loaded — segments configured</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> IDT installed — interrupts armed</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> PIC remapped — IRQ0-15 active</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> PS/2 keyboard driver initialized</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> e1000 NIC detected — TCP/IP stack up</span></div>
+        <div class="term-line"><span class="p">$</span><span class="ok">[ OK ]</span><span class="t"> Shell ready<span class="term-cursor"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">// 01 &nbsp;Características</div>
+    <h2 class="section-title">Lo que incluye ZyphraOS</h2>
+    <p class="section-desc">Construido desde cero en C e Intel ASM. Sin librerías externas. Bare-metal puro.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="feat-icon">🧩</span>
+        <div class="feat-name">Bootloader GRUB Multiboot2</div>
+        <div class="feat-desc">Carga el kernel directamente desde GRUB con soporte Multiboot2. Compatible con hardware real y emuladores como QEMU.</div>
+        <span class="feat-tag">GRUB · x86</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🖥️</span>
+        <div class="feat-name">Driver VGA / Framebuffer</div>
+        <div class="feat-desc">Output de video en modo texto VGA con framebuffer. Manejo de colores, cursor y scroll por software.</div>
+        <span class="feat-tag">VGA · 80x25</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">⚙️</span>
+        <div class="feat-name">GDT / IDT completo</div>
+        <div class="feat-desc">Tabla de descriptores global e IDT con manejo de interrupciones, excepciones y system calls básicas.</div>
+        <span class="feat-tag">Protected Mode</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">⌨️</span>
+        <div class="feat-name">Driver PS/2 Keyboard</div>
+        <div class="feat-desc">Lectura de teclas vía IRQ1. Mapa de scancodes para teclado en inglés y español.</div>
+        <span class="feat-tag">IRQ1 · Scancodes</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🌐</span>
+        <div class="feat-name">Stack TCP/IP completo</div>
+        <div class="feat-desc">Implementación propia de ARP, IP, ICMP, UDP, TCP, DHCP y DNS. Conectividad real en red Ethernet.</div>
+        <span class="feat-tag">TCP · UDP · DNS · DHCP</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📡</span>
+        <div class="feat-name">Drivers de Red: e1000 + RTL8139</div>
+        <div class="feat-desc">Soporte para dos de las tarjetas de red más comunes. Detección por PCI bus scanning automático.</div>
+        <span class="feat-tag">PCI · NIC drivers</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🐚</span>
+        <div class="feat-name">Shell interactivo</div>
+        <div class="feat-desc">Línea de comandos básica con comandos de sistema: info de CPU/RAM, red, y más.</div>
+        <span class="feat-tag">CLI · Built-in cmds</span>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🔁</span>
+        <div class="feat-name">PIC Remapping</div>
+        <div class="feat-desc">Reconfiguración del 8259 PIC para evitar conflictos entre IRQs e interrupciones de CPU en modo protegido.</div>
+        <span class="feat-tag">8259 PIC</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO INSTALL -->
+<section id="install">
+  <div class="container">
+    <div class="section-label">// 02 &nbsp;Instalación</div>
+    <h2 class="section-title">Correrlo en hardware real</h2>
+    <p class="section-desc">Necesitas un USB de al menos 512 MB y Rufus. Sin particiones, sin dual boot. Solo flash y arranca.</p>
+
+    <div class="install-layout">
+      <!-- STEPS -->
+      <div class="steps" id="stepList">
+
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="step-title">Descarga el archivo ISO</div>
+            <div class="step-text">
+              Descarga <code>ZyphraOS.iso</code> desde el botón de abajo. El archivo es una imagen booteable de disco ya lista para flashear. No necesitas extraerla ni descomprimirla.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="step-title">Descarga e instala Rufus</div>
+            <div class="step-text">
+              Ve a <code>rufus.ie</code> y descarga la versión más reciente. Es gratuito, ligero y el mejor tool para crear USBs booteables en Windows.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="step-title">Conecta tu USB y abre Rufus</div>
+            <div class="step-text">
+              Inserta tu USB (≥512 MB). Rufus lo detectará automáticamente. <strong>⚠ Todos los datos del USB serán borrados.</strong> Haz backup si necesitas.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="step-title">Configura Rufus</div>
+            <div class="step-text">
+              Haz clic en <code>SELECCIONAR</code> y elige el <code>ZyphraOS.iso</code>. Rufus auto-detectará las opciones. Asegúrate de tener:<br><br>
+              • Esquema de partición: <code>MBR</code><br>
+              • Sistema de destino: <code>BIOS o UEFI-CSM</code><br>
+              • Sistema de archivos: <code>FAT32</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <div class="step-title">Flash y arranca</div>
+            <div class="step-text">
+              Haz clic en <code>EMPEZAR</code> y espera. Luego reinicia tu PC, entra al BIOS/UEFI (generalmente <code>F2</code>, <code>F12</code>, <code>DEL</code> o <code>ESC</code>) y selecciona tu USB como primer dispositivo de arranque.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-content">
+            <div class="step-title">¡ZyphraOS arranca!</div>
+            <div class="step-text">
+              Verás la secuencia de boot de GRUB, seguida del kernel de ZyphraOS inicializando los drivers. Bienvenido a tu OS hecho a mano 🟢
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RUFUS CARD -->
+      <div class="rufus-card">
+        <div class="rufus-header">
+          <span class="rufus-icon">💾</span>
+          <div>
+            <div class="rufus-name">Rufus 4.x</div>
+            <div class="rufus-ver">// Configuración recomendada</div>
+          </div>
+        </div>
+        <div class="rufus-settings">
+          <div class="rufus-field">
+            <div class="rufus-label">Dispositivo</div>
+            <div class="rufus-value">Tu USB (≥512 MB) <span class="check">✓</span></div>
+          </div>
+          <div class="rufus-field">
+            <div class="rufus-label">Tipo de arranque</div>
+            <div class="rufus-value">ZyphraOS.iso <span class="check">✓</span></div>
+          </div>
+          <div class="rufus-field">
+            <div class="rufus-label">Esquema de partición</div>
+            <div class="rufus-value">MBR <span class="check">✓</span></div>
+          </div>
+          <div class="rufus-field">
+            <div class="rufus-label">Sistema de destino</div>
+            <div class="rufus-value">BIOS o UEFI-CSM <span class="check">✓</span></div>
+          </div>
+          <div class="rufus-field">
+            <div class="rufus-label">Sistema de archivos</div>
+            <div class="rufus-value">FAT32 <span class="check">✓</span></div>
+          </div>
+          <div class="rufus-field">
+            <div class="rufus-label">Tamaño del clúster</div>
+            <div class="rufus-value">4096 bytes (default) <span class="check">✓</span></div>
+          </div>
+        </div>
+        <div class="note-box">
+          ⚠ Si tu PC tiene UEFI moderno sin modo legacy (CSM), puede que necesites habilitarlo en el BIOS. ZyphraOS es 32-bit y requiere modo BIOS/CSM activo.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="container">
+    <div class="section-label">// 03 &nbsp;Especificaciones</div>
+    <h2 class="section-title">Detalles técnicos</h2>
+
+    <div class="specs-grid">
+      <div class="spec-item">
+        <div class="spec-key">Arquitectura</div>
+        <div class="spec-val">x86 (i386)</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Bits</div>
+        <div class="spec-val">32-bit</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Lenguaje</div>
+        <div class="spec-val green">C + ASM (NASM)</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Bootloader</div>
+        <div class="spec-val">GRUB 2 (Multiboot2)</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Compilador</div>
+        <div class="spec-val">i686-elf-gcc</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Modo de video</div>
+        <div class="spec-val">VGA 80×25</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Drivers de red</div>
+        <div class="spec-val green">e1000 + RTL8139</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Stack de red</div>
+        <div class="spec-val">ARP/IP/ICMP/UDP/TCP</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Servicios</div>
+        <div class="spec-val">DHCP · DNS · HTTP</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">RAM mínima</div>
+        <div class="spec-val">32 MB</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Probado en</div>
+        <div class="spec-val green">Lenovo i5-8250U</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-key">Licencia</div>
+        <div class="spec-val">Open Source</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD CTA -->
+<section id="download">
+  <div class="container">
+    <div class="section-label" style="justify-content:center">// 04 &nbsp;Descarga</div>
+    <h2 class="section-title" style="font-size:clamp(2rem,5vw,3.5rem)">Descarga ZyphraOS</h2>
+    <p class="section-desc" style="margin: 1rem auto 2.5rem; text-align:center">
+      Archivo ISO listo para flashear. Sin instalador. Sin particionado. Solo USB y arrancar.
+    </p>
+    <a href="#" class="btn-primary" style="font-size:.92rem; padding: 1rem 3rem; margin: 0 auto; display:inline-flex;">
+      ↓ &nbsp; Descargar ZyphraOS.iso
+    </a>
+    <div class="dl-version">ZyphraOS v1.0 — Build 2026</div>
+    <div class="dl-size">~4 MB · ISO · x86 32-bit</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--bg2);">
+  <div class="container">
+    <div class="section-label">// 05 &nbsp;Preguntas frecuentes</div>
+    <h2 class="section-title">FAQ</h2>
+    <p class="section-desc">Las dudas más comunes sobre ZyphraOS.</p>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿Puedo correrlo en una máquina virtual?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Sí. ZyphraOS funciona perfectamente en <code>QEMU</code> y <code>VirtualBox</code>. En QEMU usa:<br><br>
+          <code>qemu-system-i386 -cdrom ZyphraOS.iso -m 128</code><br><br>
+          En VirtualBox crea una VM tipo "Other/Unknown (32-bit)" y monta el ISO como unidad óptica.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿Mi PC con UEFI puede arrancarlo?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          ZyphraOS es 32-bit y requiere <strong>modo BIOS/Legacy (CSM)</strong>. En tu BIOS/UEFI busca la opción "CSM Support" o "Launch CSM" y actívala. Luego selecciona el USB como dispositivo de arranque en modo Legacy.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿Qué hardware necesito mínimamente?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Cualquier PC con CPU x86 de 32-bit (o 64-bit con CSM), <strong>32 MB de RAM mínimo</strong>, puerto USB, y salida VGA o monitor compatible. Probado con éxito en un Lenovo con Intel Core i5-8250U y 12 GB de RAM.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿Borra mis datos o mi sistema operativo actual?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          <strong>No.</strong> ZyphraOS corre completamente desde el USB. No toca tu disco duro ni tu instalación de Windows/Linux. Solo el USB será formateado durante el proceso con Rufus.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿El proyecto es open source? ¿Puedo contribuir?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Sí. ZyphraOS es open source. Si quieres contribuir, reportar bugs o simplemente explorar el código, únete al servidor de Discord o escríbeme por Gmail. ¡Los PRs son bienvenidos!
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>¿Por qué 32-bit y no 64-bit?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          El modo protegido de 32-bit (i386) es el punto de entrada clásico para desarrollo de sistemas operativos bare-metal. Es más accesible, tiene documentación extensa en la OSDev Wiki, y permite enfocarse en los conceptos fundamentales: GDT, IDT, paging, drivers, y networking sin la complejidad extra del modo largo de 64-bit.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section id="support" style="background:var(--bg);">
+  <div class="container">
+    <div class="section-label">// 06 &nbsp;Soporte</div>
+    <h2 class="section-title">¿Necesitas ayuda?</h2>
+    <p class="section-desc">¿Problemas al bootear? ¿Bug extraño? Estoy aquí para ayudarte. Elige cómo contactarme.</p>
+
+    <div class="support-grid">
+
+      <!-- DISCORD -->
+      <div class="support-card discord-card">
+        <div class="support-card-top">
+          <div class="support-icon discord-icon">
+            <svg width="34" height="34" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.529 50.0174 70.6019 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="support-card-info">
+            <div class="support-platform">Discord</div>
+            <div class="support-handle">Servidor de ZyphraOS</div>
+          </div>
+        </div>
+        <p class="support-desc">
+          Únete a la comunidad. Reporta bugs, comparte tu experiencia booteando ZyphraOS, y chatea directo conmigo y el resto de los <strong>Kings</strong>.
+        </p>
+        <div class="support-perks">
+          <span class="perk">💬 Chat en tiempo real</span>
+          <span class="perk">🐛 Canal de bugs</span>
+          <span class="perk">📢 Anuncios de versiones</span>
+          <span class="perk">🤝 Comunidad activa</span>
+        </div>
+        <a href="#" class="btn-support discord-btn">
+          Unirse al Discord →
+        </a>
+      </div>
+
+      <!-- GMAIL -->
+      <div class="support-card gmail-card">
+        <div class="support-card-top">
+          <div class="support-icon gmail-icon">
+            <svg width="34" height="26" viewBox="0 0 48 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 4C0 1.79086 1.79086 0 4 0H44C46.2091 0 48 1.79086 48 4V32C48 34.2091 46.2091 36 44 36H4C1.79086 36 0 34.2091 0 32V4Z" fill="#EA4335" fill-opacity="0.15"/>
+              <path d="M4 2H44L24 20L4 2Z" fill="currentColor" opacity=".9"/>
+              <path d="M2 4L24 22L46 4V32H2V4Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M4 2L24 20L44 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="support-card-info">
+            <div class="support-platform">Gmail</div>
+            <div class="support-handle">Contacto directo</div>
+          </div>
+        </div>
+        <p class="support-desc">
+          ¿Problema específico con tu hardware? ¿Quieres colaborar o reportar algo más detallado? Escríbeme directo al correo y te respondo.
+        </p>
+        <div class="support-perks">
+          <span class="perk">🔧 Soporte técnico</span>
+          <span class="perk">🤝 Colaboraciones</span>
+          <span class="perk">📋 Reportes detallados</span>
+          <span class="perk">📬 Respuesta en 24–48h</span>
+        </div>
+        <a href="mailto:tucorreo@gmail.com" class="btn-support gmail-btn">
+          Enviar Email →
+        </a>
+      </div>
+
+    </div>
+
+    <!-- TIPS RÁPIDOS -->
+    <div class="tips-box">
+      <div class="tips-header">
+        <span class="tips-icon">⚡</span>
+        <span>Antes de pedir soporte — revisa esto primero</span>
+      </div>
+      <div class="tips-grid">
+        <div class="tip-item">
+          <span class="tip-num">1</span>
+          <div>
+            <div class="tip-title">¿CSM/Legacy activado?</div>
+            <div class="tip-text">ZyphraOS necesita modo BIOS legacy. Verifica en tu UEFI que CSM esté habilitado.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">2</span>
+          <div>
+            <div class="tip-title">¿El ISO fue flasheado correctamente?</div>
+            <div class="tip-text">Usa Rufus con la config exacta de arriba. No uses <code>dd</code> ni balenaEtcher para este ISO.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">3</span>
+          <div>
+            <div class="tip-title">¿Seleccionaste el USB en el boot menu?</div>
+            <div class="tip-text">Al encender, presiona <code>F12</code> / <code>F11</code> / <code>ESC</code> para el boot menu y elige tu USB manualmente.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">4</span>
+          <div>
+            <div class="tip-title">¿Probaste en QEMU primero?</div>
+            <div class="tip-text">Si no bootea en hardware real, primero verifica que sí corra en QEMU. Así descartamos el ISO.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Hecho con ❤️ y mucho ASM por <span>Bruno</span> — Perú 🇵🇪 &nbsp;·&nbsp; <span>@BrunoEnBits</span> &nbsp;·&nbsp; ZyphraOS es Open Source
+</footer>
+
+<script>
+  // FAQ accordion
+  function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.faq-q.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      btn.classList.add('open');
+      answer.classList.add('open');
+    }
+  }
+
+  // Intersection Observer for step animations
+  const steps = document.querySelectorAll('.step');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 120);
+      }
+    });
+  }, { threshold: 0.15 });
+  steps.forEach(s => obs.observe(s));
+
+  // Smooth active nav link highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === `#${cur}` ? 'var(--cyan)' : '';
+    });
+  });
+</script>
+</body>
+</html>
